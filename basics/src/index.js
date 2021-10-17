@@ -4,27 +4,35 @@ import { GraphQLServer } from "graphql-yoga";
 
 const typeDefs = `
   type Query {
-    hello: String!
-    name: String!
-    location: String!
-    bio: String!
+    id: ID!,
+    title: String!,
+    price: Float!,
+    releaseYear: Int,
+    rating: Float,
+    inStock: Boolean!,
   }
 `;
 
 // resolvers
 const resolvers = {
   Query: {
-    hello() {
-      return "My first query";
+    id() {
+      return "123abc";
     },
-    name() {
-      return "Illia Sendetskyi";
+    title() {
+      return "Title";
     },
-    location() {
-      return "Ukraine";
+    price() {
+      return 8.25;
     },
-    bio() {
-      return "My bio";
+    releaseYear() {
+      return null;
+    },
+    rating() {
+      return 1.67;
+    },
+    inStock() {
+      return true;
     },
   },
 };
