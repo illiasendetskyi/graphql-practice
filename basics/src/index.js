@@ -1,6 +1,45 @@
 import { GraphQLServer } from "graphql-yoga";
 
-// type definitions (schema)
+const users = [
+  {
+    id: "1",
+    name: "Illia",
+    email: "example@foo.com",
+    age: 29,
+  },
+  {
+    id: "2",
+    name: "Andrew",
+    email: "andrew@foo.com",
+    age: 29,
+  },
+  {
+    id: "3",
+    name: "Bob",
+    email: "bod@foo.com",
+  },
+];
+
+const posts = [
+  {
+    id: "1",
+    title: "Post 1 title",
+    body: "Post 1 body",
+    published: true,
+  },
+  {
+    id: "2",
+    title: "Post 2 title",
+    body: "Post 2 body",
+    published: false,
+  },
+  {
+    id: "3",
+    title: "Post 3 title",
+    body: "Post 3 body",
+    published: true,
+  },
+];
 
 const typeDefs = `
   type User {
@@ -18,11 +57,10 @@ const typeDefs = `
   }
 
   type Query {
-    greeting(name: String): String!
-    add(numbers: [Float!]!): Float!
     me: User!
+    users(nameQuery: String): [User!]!
     post: Post!
-    grades: [Int!]!
+    posts(titleQuery: String): [Post!]!
   }
 `;
 
@@ -37,6 +75,17 @@ const resolvers = {
         age: 29,
       };
     },
+    users(parent, args, ctx, info) {
+      if (args.nameQuery) {
+        return users.filter((user) =>
+          user.name
+            .toLocaleLowerCase()
+            .includes(args.nameQuery.toLocaleLowerCase())
+        );
+      } else {
+        return users;
+      }
+    },
     post() {
       return {
         id: "abc1234",
@@ -45,21 +94,19 @@ const resolvers = {
         published: true,
       };
     },
-    greeting(parent, args, ctx, info) {
-      if (args.name) {
-        return `Hello, ${args.name}!`;
-      } else {
-        return "Hello";
+    posts(parent, args, ctx, info) {
+      if (args.titleQuery) {
+        return posts.filter(
+          (post) =>
+            post.title
+              .toLocaleLowerCase()
+              .includes(args.titleQuery.toLocaleLowerCase()) ||
+            post.body
+              .toLocaleLowerCase()
+              .includes(args.titleQuery.toLocaleLowerCase())
+        );
       }
-    },
-    add(parent, args, ctx, info) {
-      return args.numbers.reduce((acc, val) => {
-        acc += val;
-        return acc;
-      }, 0);
-    },
-    grades(parent, args, ctx, info) {
-      return [2];
+      return posts;
     },
   },
 };
